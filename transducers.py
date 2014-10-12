@@ -73,7 +73,7 @@ def t_comp(*args):
     if (arglen == 2):
         f = args[0]
         g = args[1]
-        return f(g(t_slice(args,0)))
+        return lambda *args: f(g(t_slice(args,0)))
 
     elif arglen > 2:
         return t_reduce(t_comp, args[0], t_slice(args,1))
@@ -319,18 +319,18 @@ def t_mapcat(f):
     return t_comp(t_map(f), t_cat)
 
 
-# works for strings, arrays, etc.
 def t_iterable_reduce(xf, init, iterable):
     acc = init
-    for c in iterable:
-        acc = xf.step(acc, c)
+    for step in iterable:
+        acc = xf.step(acc, step)
         if t_is_reduced(acc):
             acc = acc.value
             break
     return xf.result(acc)
 
 def t_reduce(xf, init, coll):
-    # let's just wing it here for now and not check the type.
+    if type(xf) == FunctionType:
+        xf = t_wrap(xf)
     return t_iterable_reduce(xf, init, coll)
 
 def t_transduce(xf, f, init, coll):

@@ -59,3 +59,4 @@ def test_mapcat():
     print res
     assert res == [1,2,3,4,5,6,7,8,9]
 
+test_mapcat()
