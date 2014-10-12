@@ -1,4 +1,4 @@
-import types
+from types import *
 from functools import partial
 
 class Transducer:
@@ -29,6 +29,14 @@ class Wrap(Transducer):
     def step(self, result, in_val):
         return self.f(result, in_val)
 
+def t_slice(array_like, start, n = None):
+    if n is None:
+        return array_like[start:]
+    return array_like[start:n]
+
+def t_complement(f):
+    return lambda *args: partial(f,t_slice(args,0))
+
 
 def t_wrap(f):
     return Wrap(f)
@@ -38,25 +46,25 @@ class Reduced(Transducer):
     def __init__(self, value):
         self.value = value
 
-def reduced(x):
+def t_reduced(x):
     return Reduced(x)
 
-def is_reduced(x):
+def t_is_reduced(x):
     return isinstance(x, Reduced)
 
-def ensure_reduced(x):
-    if is_reduced(x):
+def t_ensure_reduced(x):
+    if t_is_reduced(x):
         return x
     else:
-        return reduced(x)
+        return t_reduced(x)
 
-def unreduced(x):
-    if is_reduced(x):
+def t_unreduced(x):
+    if t_is_reduced(x):
         return x.value
     else:
         return x
 
-def identity(x):
+def t_identity(x):
     return x
 
 
@@ -254,7 +262,7 @@ class Keep(Transducer):
 
     def step(self, result, in_val):
         v = self.f(in_val)
-        if v is None:
+        if not v:
             return result
         return self.xf.step(result,in_val)
 
@@ -272,7 +280,7 @@ class KeepIndexed(Transducer):
     def step(self, result, in_val):
         self.i += 1
         v = self.f(self.i, in_val)
-        if (v is None):
+        if not v:
             return result
         return self.xf.step(result, in_val)
 
@@ -300,7 +308,7 @@ class Cat(Transducer):
         self.xf = xf
 
     def step(self, result, in_val):
-        return t_reduce(t_preserving_reduced(self.xf, result, in_val))
+        return t_reduce(t_preserving_reduced(self.xf), result, in_val)
 
 
 def t_cat(xf):
