@@ -343,9 +343,14 @@ def t_transduce(xf, f, init, coll):
 
 
 def t_into(empty, xf, coll):
-    if type(coll) in [ListType, StringType, TupleType]:
-        return t_transduce(xf, lambda x, y: x + y, empty, coll)
-    raise RuntimeError("can't handle " + type(coll))
+    try:
+        return {
+            ListType: t_transduce(xf, lambda x, y: x.append(y), empty, coll),
+            StringType: t_transduce(xf, lambda x, y: x + y, empty, coll),
+            TupleType: t_transduce(xf, lambda x, y: tuple(x) + tuple(y), empty, coll)
+        }[type(empty)]
+    except Exception as e:
+        raise RuntimeError("can't handle " + str(type(empty)) + ": " + str(e))
 
 
 class Completing(Transducer):

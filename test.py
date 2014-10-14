@@ -37,17 +37,21 @@ def test_transduce():
     res = t_transduce(t_map(inc), array_push, [], small_array)
     assert res == map(inc, small_array)
 
+
 def test_filter():
     res = t_transduce(t_filter(is_even), array_push, [], small_array)
     assert res == filter(is_even, small_array)
+
 
 def test_remove():
     res = t_transduce(t_remove(is_even), array_push, [], small_array)
     assert res == filter(t_complement(is_even), small_array)
 
+
 def test_keep():
     res = t_transduce(t_keep(keep_even), array_push, [], small_array)
     assert res == filter(is_even, small_array)
+
 
 def test_keep_indexed():
     res = t_transduce(t_keep_indexed(keep_idx_fn), array_push, [], small_array)
@@ -59,4 +63,11 @@ def test_mapcat():
     print res
     assert res == [1,2,3,4,5,6,7,8,9]
 
-test_mapcat()
+
+def test_into():
+    xf = t_map(inc)
+    res = t_into([], xf, small_array)
+    assert res == [1,2,3,4,5,6,7,8,9,10]
+
+
+test_into()
