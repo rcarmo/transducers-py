@@ -328,16 +328,19 @@ def t_iterable_reduce(xf, init, iterable):
             break
     return xf.result(acc)
 
+
 def t_reduce(xf, init, coll):
     if type(xf) == FunctionType:
         xf = t_wrap(xf)
     return t_iterable_reduce(xf, init, coll)
+
 
 def t_transduce(xf, f, init, coll):
     if type(f) == FunctionType:
         f = t_wrap(f)
     xf = xf(f)
     return t_reduce(xf, init, coll)
+
 
 def t_into(empty, xf, coll):
     if type(coll) in [ListType, StringType, TupleType]:
@@ -359,6 +362,7 @@ class Completing(Transducer):
 
 def t_completing(xf, cf):
     return lambda xf, cf: Completing(cf, xf)
+
 
 def t_to_fn(fn, builder):
     if type(builder) == FunctionType:

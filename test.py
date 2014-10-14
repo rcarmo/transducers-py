@@ -26,7 +26,7 @@ less_than_five = lambda x: x < 5
 
 array_clone = lambda a: list(a)
 
-reverse = lambda a: reversed(array_clone(a))
+reverse = lambda a: list(reversed(array_clone(a)))
 
 def array_push(a, x):
     a.append(x)
