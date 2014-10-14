@@ -343,9 +343,12 @@ def t_transduce(xf, f, init, coll):
 
 
 def t_into(empty, xf, coll):
+    def _append_list(x, y):
+        x.append(y)
+        return x
     try:
         return {
-            ListType: t_transduce(xf, lambda x, y: x.append(y), empty, coll),
+            ListType: t_transduce(xf, lambda x, y: _append_list(x,y), empty, coll),
             StringType: t_transduce(xf, lambda x, y: x + y, empty, coll),
             TupleType: t_transduce(xf, lambda x, y: tuple(x) + tuple(y), empty, coll)
         }[type(empty)]
