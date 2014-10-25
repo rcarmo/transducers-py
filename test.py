@@ -33,7 +33,7 @@ def array_push(a, x):
     return a
 
 
-def test_transduce():
+def test_map():
     res = t_transduce(t_map(inc), array_push, [], small_array)
     assert res == map(inc, small_array)
 
@@ -60,13 +60,13 @@ def test_keep_indexed():
 
 def test_mapcat():
     res = t_transduce(t_mapcat(reverse), array_push, [], [[3,2,1],[6,5,4],[9,8,7]])
-    print res
     assert res == [1,2,3,4,5,6,7,8,9]
 
 
 def test_into():
     xf = t_map(inc)
     res = t_into([], xf, small_array)
+    print res
     assert res == [1,2,3,4,5,6,7,8,9,10]
 
 

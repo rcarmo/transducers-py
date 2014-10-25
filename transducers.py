@@ -216,7 +216,7 @@ class PartitionBy(Transducer):
         val = self.f(in_val)
 
         self.pval = val
-        if (pval == None) or (pval == val):
+        if (pval is None) or (pval == val):
             self.a.append(in_val)
             return result
         else:
@@ -330,29 +330,24 @@ def t_iterable_reduce(xf, init, iterable):
 
 
 def t_reduce(xf, init, coll):
-    if type(xf) == FunctionType:
+    if type(xf) is FunctionType:
         xf = t_wrap(xf)
     return t_iterable_reduce(xf, init, coll)
 
 
 def t_transduce(xf, f, init, coll):
-    if type(f) == FunctionType:
+    if type(f) is FunctionType:
         f = t_wrap(f)
     xf = xf(f)
     return t_reduce(xf, init, coll)
 
 
 def t_into(empty, xf, coll):
-    def _append_list(x, y):
-        x.append(y)
-        return x
-    try:
-        return {
-            ListType: t_transduce(xf, lambda x, y: _append_list(x,y), empty, coll),
-            StringType: t_transduce(xf, lambda x, y: x + y, empty, coll),
-            TupleType: t_transduce(xf, lambda x, y: tuple(x) + tuple(y), empty, coll)
-        }[type(empty)]
-    except Exception as e:
+    if type(empty) is ListType:
+        return t_transduce(xf, lambda x, y: x + [y], empty, coll),
+    elif type(empty) is StringType:
+        return t_transduce(xf, lambda x, y: x + y, empty, coll),
+    else:
         raise RuntimeError("can't handle " + str(type(empty)) + ": " + str(e))
 
 
